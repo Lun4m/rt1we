@@ -6,11 +6,10 @@
 
 class Sphere : public Hittable {
 public:
-  Sphere(point3 _center, double _radius) : center(_center), radius(_radius) {}
-  bool hit(const Ray &r, double ray_tmin, double ray_tmax,
-           HitRecord &rec) const override {
+  Sphere(Point3 _center, double _radius) : center(_center), radius(_radius) {}
+  bool hit(const Ray &r, Interval ray_t, HitRecord &rec) const override {
 
-    vec3 oc = r.origin() - center;
+    Vec3 oc = r.origin() - center;
     auto a = r.direction().length_squared();
     auto half_b = dot(oc, r.direction());
     auto c = oc.length_squared() - radius * radius;
@@ -22,22 +21,22 @@ public:
     auto sqrtd = sqrt(discriminant);
 
     auto root = (-half_b - sqrtd) / a;
-    if (root <= ray_tmin || ray_tmax <= root) {
+    if (!ray_t.surrounds(root)) {
       root = (-half_b + sqrtd) / a;
-      if (root <= ray_tmin || ray_tmax <= root) {
+      if (!ray_t.surrounds(root)) {
         return false;
       }
     }
     rec.t = root;
     rec.p = r.at(rec.t);
-    vec3 outward_normal = (rec.p - center) / radius;
+    Vec3 outward_normal = (rec.p - center) / radius;
     rec.set_face_normal(r, outward_normal);
 
     return true;
   }
 
 private:
-  point3 center;
+  Point3 center;
   double radius;
 };
 
