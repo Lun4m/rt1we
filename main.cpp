@@ -4,7 +4,20 @@
 
 #include <iostream>
 
+bool hit_sphere(const point3 &center, double radius, const Ray &r) {
+  vec3 oc = r.origin() - center;
+  auto a = dot(r.direction(), r.direction());
+  auto b = 2.0 * dot(oc, r.direction());
+  auto c = dot(oc, oc) - radius * radius;
+  auto discriminant = b * b - 4 * a * c;
+  return discriminant >= 0;
+}
+
 color ray_color(const Ray &r) {
+  if (hit_sphere(point3(0, 0, 1), 0.5, r)) {
+    return color(1, 0, 0);
+  }
+
   vec3 unit_direction = unit_vector(r.direction());
   // LERP transformation
   auto a = 0.5 * (unit_direction.y() + 1.0);
@@ -33,7 +46,7 @@ int main(int argc, char *argv[]) {
   auto pixel_delta_u = viewport_u / image_width;
   auto pixel_delta_v = viewport_v / image_height;
 
-  auto viewport_upper_left = camera_center - vec3(0, 0, focal_length) -
+  auto viewport_upper_left = camera_center + vec3(0, 0, focal_length) -
                              viewport_u / 2 - viewport_v / 2;
 
   auto pixel00_loc =
