@@ -1,6 +1,5 @@
-#include "constants.h"
-
 #include "camera.h"
+#include "constants.h"
 #include "hittable_list.h"
 #include "sphere.h"
 

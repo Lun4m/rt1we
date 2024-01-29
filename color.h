@@ -3,9 +3,15 @@
 
 #include "interval.h"
 #include "vec3.h"
+
+#include <cmath>
 #include <iostream>
 
 using Color = Vec3;
+
+inline double linear_to_gamma(double linear_component) {
+  return sqrt(linear_component);
+}
 
 inline void write_color(std::ostream &out, Color pixel_color,
                         int samples_per_pixel) {
@@ -18,6 +24,11 @@ inline void write_color(std::ostream &out, Color pixel_color,
   r *= scale;
   g *= scale;
   b *= scale;
+
+  // Apply linear to gamme transform
+  r = linear_to_gamma(r);
+  g = linear_to_gamma(g);
+  b = linear_to_gamma(b);
 
   // Write the translated [0,255] value of each color component
   static const Interval intensity(0.000, 0.999);

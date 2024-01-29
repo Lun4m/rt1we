@@ -17,7 +17,7 @@ public:
   void render(const HittableList &world) {
     initialize();
 
-    // .ppm header
+    // ppm header
     std::cout << "P3\n" << image_width << ' ' << image_height << "\n255\n";
 
     for (int j = 0; j < image_height; j++) {
@@ -95,6 +95,7 @@ private:
     }
     if (world.hit(r, Interval(0.001, infinity), rec)) {
       Vec3 direction = rec.normal + random_unit_vector();
+      // reflectance * ray_color
       return 0.5 * ray_color(Ray(rec.p, direction), depth - 1, world);
     }
 
