@@ -3,7 +3,7 @@
 
 #include "color.h"
 #include "constants.h"
-#include "hittable.h"
+#include "hittable_list.h"
 
 #include <iostream>
 
@@ -14,7 +14,7 @@ public:
   int samples_per_pixel = 10;
   int max_depth = 10; // Max number of ray bounces into scene
 
-  void render(const Hittable &world) {
+  void render(const HittableList &world) {
     initialize();
 
     // .ppm header
@@ -87,7 +87,7 @@ private:
     return (px * pixel_delta_u) + (py * pixel_delta_v);
   }
 
-  Color ray_color(const Ray &r, int depth, const Hittable &world) const {
+  Color ray_color(const Ray &r, int depth, const HittableList &world) const {
     HitRecord rec;
 
     if (depth <= 0) {
