@@ -15,7 +15,7 @@ int main(int argc, char *argv[]) {
 
   world.add(
       make_shared<Sphere>(Point3(0.0, -100.5, -1.0), 100, material_ground));
-  world.add(make_shared<Sphere>(Point3(0.0, 0.0, -1.0), 0.5, material_center));
+  world.add(make_shared<Sphere>(Point3(0.0, 0.0, -1.0), 0.3, material_center));
   world.add(make_shared<Sphere>(Point3(-1.0, 0.0, -1.0), 0.5, material_left));
   world.add(make_shared<Sphere>(Point3(-1.0, 0.0, -1.0), -0.4, material_left));
   world.add(make_shared<Sphere>(Point3(1.0, 0.0, -1.0), 0.5, material_right));
@@ -30,6 +30,9 @@ int main(int argc, char *argv[]) {
   cam.lookfrom = Point3(-2, 2, 1);
   cam.lookat = Point3(0, 0, -1);
   cam.vup = Point3(0, 1, 0);
+
+  cam.defocus_angle = 10.0;
+  cam.focus_dist = 3.4;
 
   cam.render(world);
   return 0;

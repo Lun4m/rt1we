@@ -20,6 +20,9 @@ public:
   Point3 lookat = Point3(0, 0, 0);
   Vec3 vup = Vec3(0, 1, 0); // Camera relative "up" direction
 
+  double defocus_angle = 0;
+  double focus_dist = 10;
+
   void render(const HittableList &world) {
     initialize();
 
@@ -50,6 +53,8 @@ private:
   Vec3 pixel_delta_u;
   Vec3 pixel_delta_v;
   Vec3 u, v, w; // Camera frame basis vectors
+  Vec3 defocus_disk_u;
+  Vec3 defocus_disk_v;
 
   void initialize() {
     image_height = static_cast<int>(image_width / aspect_ratio);
@@ -58,10 +63,9 @@ private:
     center = lookfrom;
 
     // Viewport dimension
-    auto focal_length = (lookfrom - lookat).length();
     auto theta = degrees_to_radians(vfov);
     auto h = tan(0.5 * theta);
-    auto viewport_height = 2 * h * focal_length;
+    auto viewport_height = 2 * h * focus_dist;
     auto viewport_width =
         viewport_height * (static_cast<double>(image_width) / image_height);
 
@@ -80,18 +84,29 @@ private:
 
     // Upper left pixel location
     auto viewport_upper_left =
-        center - (focal_length * w) - 0.5 * (viewport_u + viewport_v);
+        center - (focus_dist * w) - 0.5 * (viewport_u + viewport_v);
     pixel00_loc = viewport_upper_left + 0.5 * (pixel_delta_u + pixel_delta_v);
+
+    auto defocus_radius =
+        focus_dist * tan(degrees_to_radians(0.5 * defocus_angle));
+    defocus_disk_u = defocus_radius * u;
+    defocus_disk_v = defocus_radius * v;
   }
 
   Ray get_ray(int i, int j) const {
     // Random sample camera ray for pixel (i,j)
+    // It originates from the defocus disk
     auto pixel_center = pixel00_loc + (i * pixel_delta_u) + (j * pixel_delta_v);
     auto pixel_sample = pixel_center + pixel_sample_square();
 
-    auto ray_origin = center;
+    auto ray_origin = (defocus_angle <= 0) ? center : defocus_disk_sample();
     auto ray_direction = pixel_sample - ray_origin;
     return Ray(ray_origin, ray_direction);
+  }
+
+  Point3 defocus_disk_sample() const {
+    Vec3 p = random_in_unit_disk();
+    return center + (p[0] * defocus_disk_u) + (p[1] * defocus_disk_v);
   }
 
   Vec3 pixel_sample_square() const {
