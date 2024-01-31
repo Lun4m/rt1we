@@ -14,7 +14,11 @@ public:
   int image_width = 100;
   int samples_per_pixel = 10;
   int max_depth = 10; // Max number of ray bounces into scene
-  double vfov = 90;   // Vertival FOV angle
+
+  double vfov = 90; // Vertical FOV angle
+  Point3 lookfrom = Point3(0, 0, -1);
+  Point3 lookat = Point3(0, 0, 0);
+  Vec3 vup = Vec3(0, 1, 0); // Camera relative "up" direction
 
   void render(const HittableList &world) {
     initialize();
@@ -45,24 +49,30 @@ private:
   Point3 pixel00_loc;
   Vec3 pixel_delta_u;
   Vec3 pixel_delta_v;
+  Vec3 u, v, w; // Camera frame basis vectors
 
   void initialize() {
     image_height = static_cast<int>(image_width / aspect_ratio);
     image_height = (image_height < 1) ? 1 : image_height;
 
-    center = Point3(0, 0, 0);
+    center = lookfrom;
 
     // Viewport dimension
-    auto focal_length = 1.0;
+    auto focal_length = (lookfrom - lookat).length();
     auto theta = degrees_to_radians(vfov);
     auto h = tan(0.5 * theta);
     auto viewport_height = 2 * h * focal_length;
     auto viewport_width =
         viewport_height * (static_cast<double>(image_width) / image_height);
 
+    // Calculate basis vectors
+    w = unit_vector(lookfrom - lookat);
+    u = unit_vector(cross(vup, w));
+    v = cross(w, u);
+
     // Viewport edge vectors
-    auto viewport_u = Vec3(viewport_width, 0, 0);
-    auto viewport_v = Vec3(0, -viewport_height, 0);
+    auto viewport_u = viewport_width * u;
+    auto viewport_v = viewport_height * -v;
 
     // Pixel spacings
     pixel_delta_u = viewport_u / image_width;
@@ -70,7 +80,7 @@ private:
 
     // Upper left pixel location
     auto viewport_upper_left =
-        center - Vec3(0, 0, focal_length) - viewport_u / 2 - viewport_v / 2;
+        center - (focal_length * w) - 0.5 * (viewport_u + viewport_v);
     pixel00_loc = viewport_upper_left + 0.5 * (pixel_delta_u + pixel_delta_v);
   }
 
