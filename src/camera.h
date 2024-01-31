@@ -14,6 +14,7 @@ public:
   int image_width = 100;
   int samples_per_pixel = 10;
   int max_depth = 10; // Max number of ray bounces into scene
+  double vfov = 90;   // Vertival FOV angle
 
   void render(const HittableList &world) {
     initialize();
@@ -53,7 +54,9 @@ private:
 
     // Viewport dimension
     auto focal_length = 1.0;
-    auto viewport_height = 2.0;
+    auto theta = degrees_to_radians(vfov);
+    auto h = tan(0.5 * theta);
+    auto viewport_height = 2 * h * focal_length;
     auto viewport_width =
         viewport_height * (static_cast<double>(image_width) / image_height);
 
