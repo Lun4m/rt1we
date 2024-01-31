@@ -68,7 +68,8 @@ public:
     bool cannot_refract = refraction_ratio * sin_theta > 1.0;
     Vec3 direction;
 
-    if (cannot_refract) {
+    if (cannot_refract ||
+        reflectance(cos_theta, refraction_ratio) > random_double()) {
       direction = reflect(unit_direction, rec.normal);
     } else {
       direction = refract(unit_direction, rec.normal, refraction_ratio);
@@ -80,6 +81,13 @@ public:
 
 private:
   double ir; // Index of refraction
+
+  static double reflectance(double cosine, double ir_ratio) {
+    // Schlink's approximation
+    auto r0 = (1 - ir_ratio) / (1 + ir_ratio);
+    r0 *= r0;
+    return r0 + (1 - r0) * pow((1 - cosine), 5);
+  }
 };
 
 #endif // !MATERIAL_H
