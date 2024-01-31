@@ -17,6 +17,7 @@ int main(int argc, char *argv[]) {
       make_shared<Sphere>(Point3(0.0, -100.5, -1.0), 100, material_ground));
   world.add(make_shared<Sphere>(Point3(0.0, 0.0, -1.0), 0.5, material_center));
   world.add(make_shared<Sphere>(Point3(-1.0, 0.0, -1.0), 0.5, material_left));
+  world.add(make_shared<Sphere>(Point3(-1.0, 0.0, -1.0), -0.4, material_left));
   world.add(make_shared<Sphere>(Point3(1.0, 0.0, -1.0), 0.5, material_right));
 
   Camera cam;
