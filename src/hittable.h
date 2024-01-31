@@ -1,13 +1,17 @@
 #ifndef HITTABLE_H
 #define HITTABLE_H
 
+#include "constants.h"
 #include "interval.h"
 #include "ray.h"
+
+class Material; // avoids circular import
 
 class HitRecord {
 public:
   Point3 p;
   Vec3 normal;
+  shared_ptr<Material> mat;
   double t;
   bool front_face;
 

@@ -4,6 +4,7 @@
 #include "color.h"
 #include "constants.h"
 #include "hittable_list.h"
+#include "material.h"
 
 #include <iostream>
 
@@ -94,9 +95,13 @@ private:
       return Color(0, 0, 0);
     }
     if (world.hit(r, Interval(0.001, infinity), rec)) {
-      Vec3 direction = rec.normal + random_unit_vector();
-      // reflectance * ray_color
-      return 0.5 * ray_color(Ray(rec.p, direction), depth - 1, world);
+      Ray scattered;
+      Color attenuation;
+      if (rec.mat->scatter(r, rec, attenuation, scattered)) {
+        return attenuation * ray_color(scattered, depth - 1, world);
+      }
+
+      return Color(0, 0, 0);
     }
 
     Vec3 unit_direction = unit_vector(r.direction());

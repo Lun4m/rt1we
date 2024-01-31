@@ -2,7 +2,6 @@
 #define VEC3_H
 
 #include "constants.h"
-#include <cmath>
 #include <iostream>
 
 using std::sqrt;
@@ -43,6 +42,11 @@ public:
   }
 
   double length() const { return sqrt(length_squared()); }
+
+  double near_zero() const {
+    auto s = 1e-8;
+    return (fabs(e[0]) < s) && (fabs(e[1]) < s) && (fabs(e[2]) < s);
+  }
 
   static Vec3 random() {
     return Vec3(random_double(), random_double(), random_double());
@@ -99,9 +103,11 @@ inline Vec3 random_in_unit_sphere() {
     }
   }
 }
+
 inline Vec3 random_unit_vector() {
   return unit_vector(random_in_unit_sphere());
 }
+
 inline Vec3 random_on_hemisphere(const Vec3 &normal) {
   Vec3 on_unit_sphere = random_unit_vector();
   if (dot(on_unit_sphere, normal) > 0.0) {
@@ -109,6 +115,10 @@ inline Vec3 random_on_hemisphere(const Vec3 &normal) {
   } else {
     return -on_unit_sphere;
   }
+}
+
+inline Vec3 reflect(const Vec3 &v, const Vec3 &n) {
+  return v - 2 * dot(v, n) * n;
 }
 
 #endif
